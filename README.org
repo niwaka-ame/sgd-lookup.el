@@ -1,0 +1,25 @@
+#+TITLE: Pop yeast gene info in Emacs
+
+* What is ~sgd-lookup.el~?
+
+An Emacs API wrapper for [[https://www.yeastgenome.org][Saccharomyces Genome Database (SGD)]].
+
+It allows quick access to gene info when I read or write in Emacs.
+
+* Installation
+
+1. Install [[https://github.com/tumashu/posframe][posframe]].
+2. Clone or download this repository (path of folder is ~<path-to-sgd-lookup>~ below).
+
+3. In your ~~/.emacs~ file (or ~~/.doom.d/config.el~ if you are using Doom Emacs), add this line:
+   #+begin_src elisp
+(add-to-list 'load-path "<path-to-sgd-lookup>")
+   #+end_src
+
+* Usage
+
+Type a gene name and move cursor onto it in an arbitrary buffer, and then:
+
++ ~M-x sgd-lookup-description~ pops up a frame to show the name description and description of that gene.
++ ~M-x sgd-lookup-gene-homepage~ opens the SGD page of that gene with default browser.
++ ~M-x sgd-lookup-gene-info~ asks the user to choose a category of info (e.g. homolog) and then a database (e.g. FungiDB) and opens the corresponding webpage of that gene with default browser.

@@ -2,13 +2,13 @@
 ;;
 ;; Copyright (C) 2022 Yu Huo
 ;;
-;; Author: Yu Huo <https://github.com/niwaka-ame/sgd-lookup.el>
+;; Author: Yu Huo <https://github.com/niwaka-ame>
 ;; Maintainer: Yu Huo <yhuo@tuta.io>
 ;; Created: February 01, 2022
 ;; Modified: February 01, 2022
 ;; Version: 0.0.1
 ;; Keywords: comm
-;; Homepage: https://github.com/yu/sgd
+;; Homepage: https://github.com/niwaka-ame/sgd-lookup.el
 ;; Package-Requires: ((emacs "25.1"))
 ;;
 ;; This file is not part of GNU Emacs.

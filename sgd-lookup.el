@@ -6,7 +6,7 @@
 ;; Maintainer: Yu Huo <yhuo@tuta.io>
 ;; Created: February 01, 2022
 ;; Modified: February 01, 2022
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: comm
 ;; Homepage: https://github.com/niwaka-ame/sgd-lookup.el
 ;; Package-Requires: ((emacs "25.1"))
@@ -19,7 +19,6 @@
 ;;
 ;;; Code:
 
-(require 'posframe)
 (require 'json)
 
 (defvar sgd-lookup-base-url "https://www.yeastgenome.org")
@@ -44,14 +43,17 @@
           #'(lambda (ele) (string= (car ele) field))
           content-array))))
 
-(defun sgd-lookup--posframe (string &optional timeout)
-  "Show the SGD content as STRING in a posframe for TIMEOUT."
-  (let ((timeout (or timeout 20)))
-    (when (posframe-workable-p)
-      (posframe-show "*sgd-posframe*"
-                     :string string
-                     :timeout timeout
-                     :max-width (window-body-width)))))
+(defun sgd-lookup--pop-buffer (string)
+  "Show the SGD content as STRING in a pop-up buffer."
+  (let ((sgd-buffer-name "*sgd-info*"))
+    (get-buffer-create sgd-buffer-name)
+    (with-current-buffer sgd-buffer-name
+      (delete-region (point-min) (point-max))
+      (goto-char (point-min))
+      (insert string)
+      (org-mode))
+    (display-buffer sgd-buffer-name
+                    '(display-buffer-at-bottom . ((window-height . 0.2))))))
 
 (defun sgd-lookup-description ()
   "Look up description of a gene on SGD in a posframe."
@@ -59,7 +61,7 @@
   (let* ((gene (thing-at-point 'word))
          (name-desc (sgd-lookup--get-field gene "name_description"))
          (desc (sgd-lookup--get-field gene "description")))
-    (sgd-lookup--posframe (concat name-desc "\n" desc))))
+    (sgd-lookup--pop-buffer (concat name-desc "\n" desc))))
 
 (defun sgd-lookup-gene-homepage ()
   "Look up a gene on SGD via default browser."

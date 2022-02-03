@@ -18,8 +18,9 @@ It allows quick access to gene info when I read or write in Emacs.
 
 * Usage
 
-Type a gene name and move cursor onto it in an arbitrary buffer, and then:
+Type a gene name (e.g. GAL2) and move cursor onto it in an arbitrary buffer, and then:
 
-+ ~M-x sgd-lookup-description~ pops up a frame to show the name description and description of that gene.
++ ~M-x sgd-lookup-description~ pops up a window at the bottom to show the name description and description of that gene.
++ ~M-x sgd-lookup-paragraph~ pops up a window at the bottom to show the detailed description of that gene.
 + ~M-x sgd-lookup-gene-homepage~ opens the SGD page of that gene with default browser.
 + ~M-x sgd-lookup-gene-info~ asks the user to choose a category of info (e.g. homolog) and then a database (e.g. FungiDB) and opens the corresponding webpage of that gene with default browser.

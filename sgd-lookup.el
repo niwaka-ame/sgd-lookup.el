@@ -6,7 +6,7 @@
 ;; Maintainer: Yu Huo <yhuo@tuta.io>
 ;; Created: February 01, 2022
 ;; Modified: February 01, 2022
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Keywords: comm
 ;; Homepage: https://github.com/niwaka-ame/sgd-lookup.el
 ;; Package-Requires: ((emacs "25.1"))
@@ -20,6 +20,7 @@
 ;;; Code:
 
 (require 'json)
+(require 'cl-lib)
 
 (defvar sgd-lookup-base-url "https://www.yeastgenome.org")
 
@@ -43,9 +44,10 @@
           #'(lambda (ele) (string= (car ele) field))
           content-array))))
 
-(defun sgd-lookup--pop-buffer (string)
-  "Show the SGD content as STRING in a pop-up buffer."
-  (let ((sgd-buffer-name "*sgd-info*"))
+(defun sgd-lookup--pop-window (string &optional height)
+  "Show the SGD content as STRING in a pop-up window with HEIGHT."
+  (let ((sgd-buffer-name "*sgd-info*")
+        (height (or height 0.2)))
     (get-buffer-create sgd-buffer-name)
     (with-current-buffer sgd-buffer-name
       (delete-region (point-min) (point-max))
@@ -53,15 +55,29 @@
       (insert string)
       (org-mode))
     (display-buffer sgd-buffer-name
-                    '(display-buffer-at-bottom . ((window-height . 0.2))))))
+                    `(display-buffer-at-bottom . ((window-height . ,height))))))
 
 (defun sgd-lookup-description ()
-  "Look up description of a gene on SGD in a posframe."
+  "Look up description of a gene on SGD in a pop-up window at the bottom of current frame."
   (interactive)
   (let* ((gene (thing-at-point 'word))
          (name-desc (sgd-lookup--get-field gene "name_description"))
          (desc (sgd-lookup--get-field gene "description")))
-    (sgd-lookup--pop-buffer (concat name-desc "\n" desc))))
+    (sgd-lookup--pop-window (concat name-desc "\n" desc))))
+
+(defun sgd-lookup-paragraph ()
+  "Look up paragraph of a gene on SGD in a pop-up window at the bottom of current frame."
+  (interactive)
+  (let* ((gene (thing-at-point 'word))
+         (paragraph (cdr (assoc 'text (sgd-lookup--get-field gene "paragraph"))))
+         (string (with-temp-buffer
+                   (insert paragraph)
+                   (goto-char (point-min))
+                   ; remove the annoying HTML fragments
+                   (while (re-search-forward "<.*?>" nil t)
+                     (replace-match "" 'fixedcase nil))
+                   (buffer-string))))
+    (sgd-lookup--pop-window string 0.3)))
 
 (defun sgd-lookup-gene-homepage ()
   "Look up a gene on SGD via default browser."

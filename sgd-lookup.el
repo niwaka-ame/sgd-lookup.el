@@ -30,7 +30,10 @@
                         (concat
                          sgd-lookup-base-url
                          "/backend/locus/"
-                         gene))
+                         gene)
+                        'silent
+                        'inhibit-cookies
+                        5)
     (json-read)))
 
 

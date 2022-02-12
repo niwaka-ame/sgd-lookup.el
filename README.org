@@ -6,6 +6,8 @@ An Emacs API wrapper for [[https://www.yeastgenome.org][Saccharomyces Genome Dat
 
 It allows quick access to gene info when I read or write in Emacs.
 
+Note: This is NOT part of SGD.
+
 * Installation
 
 1. Clone or download this repository (path of folder is ~<path-to-sgd-lookup>~ below).

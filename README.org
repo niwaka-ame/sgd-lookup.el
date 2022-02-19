@@ -1,14 +1,18 @@
 #+TITLE: Pop yeast gene info in Emacs
 
-* What is ~sgd-lookup.el~?
+** What is ~sgd-lookup.el~?
 
 An Emacs API wrapper for [[https://www.yeastgenome.org][Saccharomyces Genome Database (SGD)]].
 
 It allows quick access to gene info when I read or write in Emacs.
 
+<<<<<<< HEAD
 Note: This is NOT part of SGD.
 
 * Installation
+=======
+** Installation
+>>>>>>> 038651f (v0.1.0. Redefined UI and updated readme.)
 
 1. Clone or download this repository (path of folder is ~<path-to-sgd-lookup>~ below).
 
@@ -18,11 +22,21 @@ Note: This is NOT part of SGD.
 (require 'sgd-lookup)
    #+end_src
 
-* Usage
+** Usage
 
-Type a gene name (e.g. GAL2) and move cursor onto it in an arbitrary buffer, and then:
++ ~M-x sgd-lookup~ prompts for a gene name (e.g. GAL2 or YLR081W) and then action.
++ ~M-x sgd-lookup-at-point~ reads the gene name at the cursor and prompts for action.
 
-+ ~M-x sgd-lookup-description~ pops up a window at the bottom to show the name description and description of that gene.
-+ ~M-x sgd-lookup-paragraph~ pops up a window at the bottom to show the detailed description of that gene.
-+ ~M-x sgd-lookup-gene-homepage~ opens the SGD page of that gene with default browser.
-+ ~M-x sgd-lookup-gene-info~ asks the user to choose a category of info (e.g. homolog) and then a database (e.g. FungiDB) and opens the corresponding webpage of that gene with default browser.
+Available actions:
++ ~description~: show description of a gene in a pop-up window.
++ ~summary paragraph~: show summary paragraph of a gene in a pop-up window (if exists).
++ ~visit in browser~: visit gene entry in default browser.
++ ~more URLs~: prompts for a category of info (e.g. homolog) and then a database (e.g. FungiDB).
+  Open URLs provided by SGD to internal and external databases.
+
+Feedback and feature requests are welcomed!
+
+** Release history
++ Version ~0.1.0~: ~sgd-lookup-description~, ~sgd-lookup-paragraph~, ~sgd-lookup-gene-homepage~ and ~sgd-lookup-gene-info~ are no longer interactive.
+  To achieve the same behaviour, use ~sgd-lookup-at-point~ instead.
++ Version ~0.0.4~: original release.

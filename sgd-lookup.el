@@ -6,7 +6,7 @@
 ;; Maintainer: Yu Huo <yhuo@tuta.io>
 ;; Created: February 01, 2022
 ;; Modified: February 20, 2022
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Keywords: comm
 ;; Homepage: https://github.com/niwaka-ame/sgd-lookup.el
 ;; Package-Requires: ((emacs "25.1"))
@@ -25,6 +25,7 @@
 (defconst sgd-lookup-base-url "https://www.yeastgenome.org")
 (defconst sgd-lookup-action-list
   (list "description"
+        "name description"
         "summary paragraph"
         "phenotype"
         "visit in browser"
@@ -40,15 +41,18 @@
                         'silent
                         'inhibit-cookies
                         5)
-    (json-read)))
+    (condition-case nil
+        (json-read)
+      (error (error "Failed to fetch data. Please try again. Possible cause: connection overtime or unknown gene name!")))))
 
 
 (defun sgd-lookup--get-field (gene field)
   "Return the FIELD of info of a GENE in SGD."
-  (let ((content-array (sgd-lookup--get-and-parse-json gene)))
-    (cdr (seq-find
-          #'(lambda (ele) (string= (car ele) field))
-          content-array))))
+  (let* ((content-array (sgd-lookup--get-and-parse-json gene))
+         (field-content (cdr (seq-find
+                              #'(lambda (ele) (string= (car ele) field))
+                              content-array))))
+    (or field-content (error "Connection is successful, but no relevant information is found on SGD!"))))
 
 (defun sgd-lookup--pop-window (string &optional height)
   "Show the SGD content as STRING in a pop-up window with HEIGHT."
@@ -65,15 +69,21 @@
 
 (defun sgd-lookup-description (gene)
   "Look up description of a GENE on SGD in a pop-up window at the bottom of current frame."
-  (let ((name-desc (sgd-lookup--get-field gene "name_description"))
-        (desc (sgd-lookup--get-field gene "description")))
-    (sgd-lookup--pop-window (concat gene "\n" name-desc "\n" desc))))
+  (let ((desc (sgd-lookup--get-field gene "description")))
+    (sgd-lookup--pop-window (concat gene "\n" desc))))
+
+(defun sgd-lookup-name-description (gene)
+  "Look up name description of a GENE on SGD in a pop-up window."
+  (let ((name-desc (sgd-lookup--get-field gene "name_description")))
+    (sgd-lookup--pop-window (concat gene "\n" name-desc))))
 
 (defun sgd-lookup-phenotype (gene)
   "Look up phenotype of a GENE on SGD in a pop-up window at the bottom of current frame."
   (let* ((phenotype (sgd-lookup--get-field gene "phenotype_overview"))
          (paragraph (cdr (assoc "paragraph" phenotype 'string=))))
-    (sgd-lookup--pop-window (concat gene "\n" paragraph))))
+    (if paragraph
+        (sgd-lookup--pop-window (concat gene "\n" paragraph))
+      (error "Connection is successful, but no relevant information is found on SGD!"))))
 
 (defun sgd-lookup-paragraph (gene)
   "Look up paragraph of a GENE on SGD in a pop-up window at the bottom of current frame."
@@ -130,6 +140,7 @@
          (choice (completing-read "Action: " func-list nil t)))
     (pcase choice
       ("description" (sgd-lookup-description gene))
+      ("name description" (sgd-lookup-name-description gene))
       ("summary paragraph" (sgd-lookup-paragraph gene))
       ("phenotype" (sgd-lookup-phenotype gene))
       ("visit in browser" (sgd-lookup-gene-homepage gene))

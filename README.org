@@ -25,6 +25,7 @@ Note: This is NOT part of SGD.
 
 Available actions:
 + ~description~: show description of a gene in a pop-up window.
++ ~name description~: show name description of a gene in a pop-up window (if exists).
 + ~summary paragraph~: show summary paragraph of a gene in a pop-up window (if exists).
 + ~phenotype~: show phenotype overview of a gene in a pop-up window (if exists).
 + ~visit in browser~: visit gene entry in default browser.
@@ -34,6 +35,7 @@ Available actions:
 Feedback and feature requests are welcomed!
 
 ** Release history
++ Version ~0.1.2~: Separate ~name description~ from ~description~, because some genes may not have a name description. Add message when info fetch fails.
 + Version ~0.1.1~: Supports new action: ~phenotype~.
 + Version ~0.1.0~: ~sgd-lookup-description~, ~sgd-lookup-paragraph~, ~sgd-lookup-gene-homepage~ and ~sgd-lookup-gene-info~ are no longer interactive.
   To achieve the same behaviour, use ~sgd-lookup-at-point~ instead.

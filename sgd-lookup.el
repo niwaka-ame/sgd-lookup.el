@@ -5,8 +5,8 @@
 ;; Author: Yu Huo <https://github.com/niwaka-ame>
 ;; Maintainer: Yu Huo <yhuo@tuta.io>
 ;; Created: February 01, 2022
-;; Modified: February 19, 2022
-;; Version: 0.1.0
+;; Modified: February 20, 2022
+;; Version: 0.1.1
 ;; Keywords: comm
 ;; Homepage: https://github.com/niwaka-ame/sgd-lookup.el
 ;; Package-Requires: ((emacs "25.1"))
@@ -22,7 +22,13 @@
 (require 'json)
 (require 'cl-lib)
 
-(defvar sgd-lookup-base-url "https://www.yeastgenome.org")
+(defconst sgd-lookup-base-url "https://www.yeastgenome.org")
+(defconst sgd-lookup-action-list
+  (list "description"
+        "summary paragraph"
+        "phenotype"
+        "visit in browser"
+        "more URLs"))
 
 (defun sgd-lookup--get-and-parse-json (gene)
   "Get and parse json info from SGD for a specific GENE."
@@ -61,7 +67,13 @@
   "Look up description of a GENE on SGD in a pop-up window at the bottom of current frame."
   (let ((name-desc (sgd-lookup--get-field gene "name_description"))
         (desc (sgd-lookup--get-field gene "description")))
-    (sgd-lookup--pop-window (concat name-desc "\n" desc))))
+    (sgd-lookup--pop-window (concat gene "\n" name-desc "\n" desc))))
+
+(defun sgd-lookup-phenotype (gene)
+  "Look up phenotype of a GENE on SGD in a pop-up window at the bottom of current frame."
+  (let* ((phenotype (sgd-lookup--get-field gene "phenotype_overview"))
+         (paragraph (cdr (assoc "paragraph" phenotype 'string=))))
+    (sgd-lookup--pop-window (concat gene "\n" paragraph))))
 
 (defun sgd-lookup-paragraph (gene)
   "Look up paragraph of a GENE on SGD in a pop-up window at the bottom of current frame."
@@ -73,7 +85,7 @@
                    (while (re-search-forward "<.*?>" nil t)
                      (replace-match "" 'fixedcase nil))
                    (buffer-string))))
-    (sgd-lookup--pop-window string 0.3)))
+    (sgd-lookup--pop-window (concat gene "\n" string) 0.3)))
 
 (defun sgd-lookup-gene-homepage (gene)
   "Look up a GENE on SGD via default browser."
@@ -112,13 +124,14 @@
         (browse-url link)
       (browse-url (concat sgd-lookup-base-url link)))))
 
-(defun sgd-lookup--func-menu (gene)
+(defun sgd-lookup--action-menu (gene)
   "Prompt for function to use to look up GENE info."
-  (let* ((func-list (list "description" "summary paragraph" "visit in browser" "more URLs"))
+  (let* ((func-list sgd-lookup-action-list)
          (choice (completing-read "Action: " func-list nil t)))
     (pcase choice
       ("description" (sgd-lookup-description gene))
       ("summary paragraph" (sgd-lookup-paragraph gene))
+      ("phenotype" (sgd-lookup-phenotype gene))
       ("visit in browser" (sgd-lookup-gene-homepage gene))
       ("more URLs" (sgd-lookup-gene-info gene)))))
 
@@ -126,13 +139,13 @@
   "Prompt for a gene name and look up info on SGD."
   (interactive)
   (let ((gene (read-string "Input gene name: ")))
-    (sgd-lookup--func-menu gene)))
+    (sgd-lookup--action-menu gene)))
 
 (defun sgd-lookup-at-point ()
   "Detect gene name at point and look up info on SGD."
   (interactive)
   (let ((gene (thing-at-point 'word)))
-    (sgd-lookup--func-menu gene)))
+    (sgd-lookup--action-menu gene)))
 
 (provide 'sgd-lookup)
 ;;; sgd-lookup.el ends here

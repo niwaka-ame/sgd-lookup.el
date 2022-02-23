@@ -6,7 +6,7 @@
 ;; Maintainer: Yu Huo <yhuo@tuta.io>
 ;; Created: February 01, 2022
 ;; Modified: February 20, 2022
-;; Version: 0.1.2
+;; Version: 0.1.3
 ;; Keywords: comm
 ;; Homepage: https://github.com/niwaka-ame/sgd-lookup.el
 ;; Package-Requires: ((emacs "25.1"))
@@ -23,13 +23,13 @@
 (require 'cl-lib)
 
 (defconst sgd-lookup-base-url "https://www.yeastgenome.org")
-(defconst sgd-lookup-action-list
-  (list "description"
-        "name description"
-        "summary paragraph"
-        "phenotype"
-        "visit in browser"
-        "more URLs"))
+(defconst sgd-lookup-action-alist
+  '(("description" . sgd-lookup-description)
+    ("name description" . sgd-lookup-name-description)
+    ("summary paragraph" . sgd-lookup-paragraph)
+    ("phenotype" . sgd-lookup-phenotype)
+    ("visit in browser" . sgd-lookup-gene-homepage)
+    ("more URLs" . sgd-lookup-gene-info)))
 
 (defun sgd-lookup--get-and-parse-json (gene)
   "Get and parse json info from SGD for a specific GENE."
@@ -136,15 +136,9 @@
 
 (defun sgd-lookup--action-menu (gene)
   "Prompt for function to use to look up GENE info."
-  (let* ((func-list sgd-lookup-action-list)
+  (let* ((func-list (mapcar #'car sgd-lookup-action-alist))
          (choice (completing-read "Action: " func-list nil t)))
-    (pcase choice
-      ("description" (sgd-lookup-description gene))
-      ("name description" (sgd-lookup-name-description gene))
-      ("summary paragraph" (sgd-lookup-paragraph gene))
-      ("phenotype" (sgd-lookup-phenotype gene))
-      ("visit in browser" (sgd-lookup-gene-homepage gene))
-      ("more URLs" (sgd-lookup-gene-info gene)))))
+    (funcall (cdr (assoc choice sgd-lookup-action-alist)) gene)))
 
 (defun sgd-lookup ()
   "Prompt for a gene name and look up info on SGD."

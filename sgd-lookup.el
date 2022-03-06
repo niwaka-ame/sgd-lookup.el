@@ -6,7 +6,7 @@
 ;; Maintainer: Yu Huo <yhuo@tuta.io>
 ;; Created: February 01, 2022
 ;; Modified: February 20, 2022
-;; Version: 0.1.3
+;; Version: 0.1.4
 ;; Keywords: comm
 ;; Homepage: https://github.com/niwaka-ame/sgd-lookup.el
 ;; Package-Requires: ((emacs "25.1"))
@@ -140,11 +140,10 @@
          (choice (completing-read "Action: " func-list nil t)))
     (funcall (cdr (assoc choice sgd-lookup-action-alist)) gene)))
 
-(defun sgd-lookup ()
+(defun sgd-lookup (gene)
   "Prompt for a gene name and look up info on SGD."
-  (interactive)
-  (let ((gene (read-string "Input gene name: ")))
-    (sgd-lookup--action-menu gene)))
+  (interactive "sInput gene name: ")
+  (sgd-lookup--action-menu gene))
 
 (defun sgd-lookup-at-point ()
   "Detect gene name at point and look up info on SGD."

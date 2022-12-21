@@ -5,8 +5,8 @@
 ;; Author: Yu Huo <https://github.com/niwaka-ame>
 ;; Maintainer: Yu Huo <yhuo@tuta.io>
 ;; Created: February 01, 2022
-;; Modified: February 20, 2022
-;; Version: 0.1.4
+;; Modified: December 21, 2022
+;; Version: 0.1.5
 ;; Keywords: comm
 ;; Homepage: https://github.com/niwaka-ame/sgd-lookup.el
 ;; Package-Requires: ((emacs "25.1"))
@@ -41,6 +41,9 @@
                         'silent
                         'inhibit-cookies
                         5)
+    (goto-char (point-min))
+    (re-search-forward "{" nil nil)
+    (backward-char 1)
     (condition-case nil
         (json-read)
       (error (error "Failed to fetch data. Please try again. Possible cause: connection overtime or unknown gene name!")))))
